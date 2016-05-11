@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.ParentsChildMapper" >
+
+ <select id="Childcheck" parameterType="String" resultType="Child">
+ select a.FSutdentID,a.FName,a.Fphone from t_students a inner join t_user b on a.FSutdentID=b.fchildid where b.fphone=#{fphone}
+ </select> 
+ <select id="getstudents" parameterType="int" resultType="Students">
+select * from t_students where FSutdentID = #{FSutdentID}
+ </select>
+</mapper>

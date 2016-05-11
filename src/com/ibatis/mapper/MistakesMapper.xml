@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.MistakesMapper" >
+
+	<insert id="insertMistakesResult" parameterType="MistakesResult">
+			insert t_examresult(FParentID,FStudentID,FExamID,FExericsID,FResult,FDate)
+			value(#{FParentID},#{FStudentID},#{FExamID},#{FExericsID},#{FResult},#{FDate})
+	</insert>		
+			
+	<select id="getmistakesList" parameterType="String" resultType="MistakesResult">
+	select m.*,count(m.FExericsID) as FCount,e.FFileName as fName
+	from t_examresult m
+	inner join t_exercise e on m.FExericsID = e.fid
+	where m.FStudentID = #{FStudentID} and m.FResult = 1
+	group by m.FExericsID
+	order by count(m.FExericsID) desc
+	</select>	
+	
+	<select id="getmistakesClassList" parameterType="String" resultType="MistakesResult">
+	select m.*,count(m.FExericsID) as FCount,e.FFileName as fName
+	from t_examresult m
+	inner join t_exercise e on m.FExericsID = e.fid
+  	inner join t_students s on s.FStudentNo = m.FStudentID
+	where s.fclassid=#{FClassID} and m.FResult= 1
+	group by m.FExericsID
+	order by count(m.FExericsID) desc
+	</select>	
+	
+	<select id="findClass" parameterType="String" resultType="String">
+		select fClassID  from t_students where FStudentNo = #{FStudentID}
+	</select>
+	
+	<select id="findClassStudent" parameterType="String" resultType="String">
+		select FStudentNo  from t_students where fClassID = #{FClassID}
+	</select>
+	
+	<select id="getmistakesAns" parameterType="String" resultType="Exercise">
+		select * from t_exercise
+			where fid = #{FExerciseID}
+	</select>
+	
+	<delete id="removeClassMistakesList" parameterType="String" >
+		delete from t_examresult where FExericsID = #{FExerciseID}
+	</delete>
+	
+	<delete id="removeChildMistakesList" parameterType="String" >
+		delete from t_examresult where FExericsID = #{FExerciseID} and FStudentID=#{FStudentID}
+	</delete>
+	
+</mapper>

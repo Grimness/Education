@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.TeacherClassMapper" >
+
+	<!-- 班级信息 -->
+	   <select id="getchild" parameterType="String" resultType="FChild">
+	select stu.FStudentID as fid ,stu.fClassID as fclasscode ,stu.FStudentNo as fStudentNo, stu.FName as fname,stu.FGender as fsex,stu.FNote as fNote,stu.Fphone as fimgpath,
+	c.fschoolid,c.fclassid,c.fgradeid,cg.fname as fgradename,ca.fname as fclassname
+	from t_teacherclass c
+	inner join t_students stu on stu.fClassID = c.fclasscode
+	inner join t_class ca on c.fclassid =  ca.fnumber and ca.ftype=1
+  	inner join t_class cg on c.fgradeid =  cg.fnumber and cg.ftype=0
+	where c.fclasscode = #{fclasscode}
+	   </select>
+	
+		<select id="getTeacherClass" resultType="TeacherClass" parameterType="String">
+		select c.fid as fid,u.fid as fteacherid,c.fphone as fphone,u.fname,u.fsex,u.fareaid,u.fschoolid,c.fgradeid,c.fclassid,u.fsubjectid,
+		cg.fname as fgradename,ca.fname as fclassname,c.fclasscode as fclasscode
+		from t_teacherclass c
+		inner join t_user u on u.fphone = c.fphone
+		inner join t_class ca on c.fclassid =  ca.fnumber and ca.ftype=1
+ 		inner join t_class cg on c.fgradeid =  cg.fnumber and cg.ftype=0
+		where u.fphone = #{fphone}
+	   </select>
+	   		
+	   <select id="getGradeName" resultType="String" parameterType="String">
+	   select c.fname as fgradename  from t_class c where ftype = 0 and fnumber = #{fgradeid}
+	   </select>
+	   
+	   <select id="getClassName" resultType="String" parameterType="String">
+	   select c.fname as fclassname  from t_class c where ftype = 1 and fnumber = #{fclassid}
+	   </select>
+	   
+	   
+	   <select id="isExistCLass" resultType="TeacherClass" parameterType="TeacherClass">
+		select * from t_teacherclass 
+		where fphone = #{fphone} 
+			and fclassid=#{fclassid} 
+			and fgradeid=#{fgradeid} 
+			and fschoolid=#{fschoolid}
+	   </select>
+	   
+	   <insert id="addfClass" parameterType="TeacherClass" >
+		insert into t_teacherclass (fphone,fclassid,fschoolid,fgradeid,fclasscode) value(#{fphone},#{fclassid},#{fschoolid},#{fgradeid},1)
+	   </insert>
+	   
+		 <update id="updateteacher_class" parameterType="TeacherClass" >
+				update t_user set fname=#{fname},fsex=#{fsex},fareaid=#{fareaid},fschoolid=#{fschoolid},fsubjectid=#{fsubjectid} where fphone=#{fphone} 
+	   </update>
+	   
+	  
+	    <update id="updateclasscode" parameterType="TeacherClass" >
+			update t_teacherclass set fclasscode =concat(30,fschoolid,fgradeid,fclassid) 
+			where fphone = #{fphone} 
+			and fclassid=#{fclassid} 
+			and fgradeid=#{fgradeid} 
+			and fschoolid=#{fschoolid}
+	   </update>
+	   
+	    <select id="getClassId" parameterType="TeacherClass" resultType="String">
+		select fclasscode from t_teacherclass 
+		where fphone = #{fphone} 
+			and fclassid=#{fclassid} 
+			and fgradeid=#{fgradeid} 
+			and fschoolid=#{fschoolid}
+	   </select>
+	   
+	    <select id="getTeacherID" parameterType="String" resultType="String">
+		select fid from t_user  where fphone = #{fphone} 
+	   </select>
+	   
+	   <select id="isExitsClasscode" parameterType="String" resultType="String">
+			select  fclasscode from t_teacherclass  where fclasscode = #{fclasscode} 
+	   </select>
+	    
+</mapper>
+	   

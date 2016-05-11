@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.QCodeMapper" >
+	
+	<!-- 单元码 -->
+	<insert id="insertUnitQCode" parameterType="String">
+		insert into t_qcode(fnumber,fname,funitdesc) value(1,#{fname},#{funitname})
+	</insert>
+	
+	<select id="selectUnitQCodeList" resultType="QCode">
+	select  ts.fid,ts.fname,
+		CONCAT(' 《',tskm.FName,' ',tsnj.FName,' ',tssxc.FName,' ',tscb.FName,'》 ',ts.funitdesc) as ftitle,
+		ts.FKM as fsubject,
+		ts.FNJ as fgrade,
+		ts.fsxc as fbook,
+		ts.fcbs as fversion,
+		ts.fdy as funit,
+		tskm.FName as fsubjectname,
+		tsnj.FName as fgradename,
+		tssxc.FName as fbookname,
+		tscb.FName as fversionname,
+		ts.funitdesc as funitname
+		from (select  q.fid,q.fname,q.funitdesc
+		,SUBSTRing(q.fname,1,2) as FCBS
+		,SUBSTRing(q.fname,3,2) as FKM
+		,SUBSTRing(q.fname,5,1) as FNJ
+		,SUBSTRing(q.fname,6,1) as FSXC
+		,SUBSTRing(q.fname,7,2) as FDY
+		 from t_qcode q
+   		 where q.fnumber = 1) ts 
+		inner join t_submessage tscb on  tscb.FParentID=5 and ts.fcbs=tscb.fnumber
+		left outer join t_submessage tskm on  tskm.FParentID=6 and ts.FKM=tskm.fnumber
+		left outer join t_submessage tsnj on  tsnj.FParentID=7 and ts.FNJ=tsnj.fnumber 
+		left outer join t_submessage tssxc on  tssxc.FParentID=8 and ts.fsxc=tssxc.fnumber
+		left outer join t_submessage tsdy on  tsdy.FParentID=3 and ts.fdy=tsdy.fnumber
+		order by ts.FKM,ts.FNJ,ts.fcbs,ts.fsxc,ts.fdy
+	</select>
+	
+	<select id="isExitUnit" parameterType="String" resultType="String">
+	select fid from t_qcode where fname=#{fname}  and fnumber = 1
+	</select>
+	
+	<select id="isExitUnitDesc"	parameterType="QCode" resultType="String">
+		select fid from t_qcode where substring(fname,1,6)=substring(#{fname},1,6) and funitdesc=#{funitname} and fnumber =1
+	</select>
+	
+	<!-- 课时码 -->
+	<insert id="insertKSQCode" parameterType="String">
+		insert into t_qcode(fnumber,fname,funitdesc,fhourdesc) value(0,#{fname},#{funitname},#{fhourname})
+	</insert>
+	
+	<select id="selectKSQCodeList" resultType="QCode">
+	select  ts.fid,ts.fname,
+		CONCAT(' 《',tskm.FName,' ',tsnj.FName,' ',tssxc.FName,' ',tscb.FName,'》 ',ts.funitdesc,' ',ts.fhourdesc) as ftitle,
+		ts.FKM as fsubject,
+		ts.FNJ as fgrade,
+		ts.fsxc as fbook,
+		ts.fcbs as fversion,
+		ts.fdy as funit,
+		ts.fks as fhour,
+		tskm.FName as fsubjectname,
+		tsnj.FName as fgradename,
+		tssxc.FName as fbookname,
+		tscb.FName as fversionname,
+		ts.funitdesc as funitname,
+		ts.fhourdesc as fhourname
+		from (select  q.fid,q.fname,q.funitdesc,q.fhourdesc
+		,SUBSTRing(q.fname,1,2) as FCBS
+		,SUBSTRing(q.fname,3,2) as FKM
+		,SUBSTRing(q.fname,5,1) as FNJ
+		,SUBSTRing(q.fname,6,1) as FSXC
+		,SUBSTRing(q.fname,7,2) as FDY
+		,SUBSTRing(q.fname,length(q.fname)-1,2) as FKS from t_qcode q
+   		 where q.fnumber = 0) ts 
+		inner join t_submessage tscb on  tscb.FParentID=5 and ts.fcbs=tscb.fnumber
+		left outer join t_submessage tskm on  tskm.FParentID=6 and ts.FKM=tskm.fnumber
+		left outer join t_submessage tsnj on  tsnj.FParentID=7 and ts.FNJ=tsnj.fnumber 
+		left outer join t_submessage tssxc on  tssxc.FParentID=8 and ts.fsxc=tssxc.fnumber
+		left outer join t_submessage tsdy on  tsdy.FParentID=3 and ts.fdy=tsdy.fnumber
+		left outer join t_submessage tsks on  tsks.FParentID=4 and ts.fks=tsks.fnumber
+		order by ts.FKM,ts.FNJ,ts.fcbs,ts.fsxc,ts.fdy,ts.fks
+	</select>
+	
+	<select id="isExitHour" parameterType="String" resultType="String">
+	select fid from t_qcode where fname=#{fname} and fnumber = 0
+	</select>
+	
+	<select id="isExitHourDesc"	parameterType="QCode" resultType="String">
+		select fid from t_qcode where substring(fname,1,8)=substring(#{fname},1,8) and fhourdesc=#{fhourname} and fnumber =0
+	</select>
+	
+	<update id="updateHourQCode" parameterType="QCode">
+		update t_qcode set funitdesc=#{funitname},fhourdesc=#{fhourname} where fname=#{fname} and fnumber=0
+	</update>
+	
+	<update id="updateUnitQCode" parameterType="QCode">
+		update t_qcode set funitdesc=#{funitname} where SUBSTRing(fname,1,8)=#{fname} 
+	</update>
+	
+	<delete id="deleteHourQCode" parameterType="QCode">
+		delete from t_qcode where fid = #{fid}
+	</delete>
+	
+	<delete id="deleteUnitQCode" parameterType="QCode">
+		delete from t_qcode where SUBSTRing(fname,1,8) = #{fname}
+	</delete>
+	
+	<select id="getDyDesc" parameterType="QCode" resultType="QCode" >
+	select distinct s.funitname,s.funit
+	from(select funitdesc as funitname,
+	SUBSTRing(q.fname,1,2) as FCBS,
+	SUBSTRing(q.fname,7,2) as funit,
+  	SUBSTRing(q.fname,3,2) as FKM,
+  	SUBSTRing(q.fname,5,1) as FNJ,
+ 	SUBSTRing(q.fname,6,1) as FSXC,
+ 	SUBSTRing(q.fname,7,2) as FDY,
+ 	q.fnumber as fnumber,
+ 	q.fname as fname
+	from t_qcode q) s
+	where s.fkm=#{fsubject} and s.fnj=#{fgrade} and s.fsxc=#{fbook} and s.fcbs=#{fversion} and s.fnumber=1 
+	order by s.fname
+
+	</select>
+	
+	<select id="getKsDesc" parameterType="QCode" resultType="QCode" >
+	select distinct s.fhourname,SUBSTRing(s.fname,9,2) as fhour
+	from(select fhourdesc as fhourname,
+	SUBSTRing(q.fname,1,2) as FCBS,
+  	SUBSTRing(q.fname,3,2) as FKM,
+  	SUBSTRing(q.fname,5,1) as FNJ,
+ 	SUBSTRing(q.fname,6,1) as FSXC,
+ 	SUBSTRing(q.fname,7,2) as FDY,
+ 	q.fnumber as fnumber,
+ 	q.fname as fname
+	from t_qcode q) s
+	where s.fkm=#{fsubject} and s.fnj=#{fgrade} and s.fsxc=#{fbook} and s.fcbs=#{fversion} and s.fdy=#{funit} and s.fnumber=0 
+	order by s.fname
+
+	</select>
+</mapper>

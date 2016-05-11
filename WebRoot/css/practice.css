@@ -1,0 +1,49 @@
+.container{
+	width: 100%;
+	height: 100%;
+}
+.practicebtn{
+	width: 120px;
+	height: 40px;
+}
+.mainPanel{
+	width: 100%;
+	margin-top: 25px; 
+	margin-left: 80px;
+}
+.panels{
+	width: 500px;
+	margin-top: 20px;
+}
+.editPanel{
+	margin-left: 45px;
+}
+.line{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	
+}
+.editbtn{
+	width: 80px;
+	height: 80px;
+	margin-top: 18px;
+}
+.dateDiv{
+	text-align: left;
+	margin-top: 30px;
+}
+.timeDiv{
+	float: left;
+	margin-top: 5px;
+}
+.practiceImg{
+	margin-left: 20px;
+	margin-top: 20px;
+}
+
+li {
+	list-style: none;
+}
+.dropdown-menu{
+	display:inline;
+}

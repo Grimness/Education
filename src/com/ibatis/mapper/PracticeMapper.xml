@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.PracticeMapper">
+
+	<insert id="addPractice" parameterType="Practice">
+	 insert into t_practice(FDate,FContent,FSutdentID,FPhoto1,FPhoto2,FPhoto3,FPhoto4,FPhone)
+	 value(#{FDate},#{FContent},#{FStudentID},#{FPhoto1},#{FPhoto2},#{FPhoto3},#{FPhoto4},#{FPhone})
+	</insert>	
+	
+	<select id="studentPractice" parameterType="String" resultType="Practice">
+ 	select p.Fid,p.FContent,p.FSutdentID as FStudentID,p.FPhoto1,p.FPhoto2,p.FPhoto3,p.FPhoto4,p.fphone,u.fsex,u.ftype,
+ 	DATE_FORMAT(p.FDate,'%w' ) as week,
+ 	DATE_FORMAT(p.FDate,'%Y年%c月%e日' ) as FDate,
+ 	DATE_FORMAT(p.FDate,'%k:%i' ) as time  from t_practice p
+ 	inner join t_user u on p.FPhone = u.fphone
+ 	where FSutdentID = #{FStudentID}
+	</select>	
+	
+	<select id="dateGroup" parameterType="String" resultType="String">
+ 	select DATE_FORMAT(p.FDate,'%Y年%c月%e日' ) as FDate
+	from t_practice p
+ 	inner join t_user u on p.FPhone = u.fphone
+ 	where FSutdentID = #{FStudentID}
+ 	group by DATE_FORMAT(p.FDate,'%Y年%c月%e日')
+ 	order by p.FDate
+	</select>	
+	
+	<select id="studentPracticeByDate" parameterType="String" resultType="Practice">
+ 	select p.Fid,p.FContent,p.FSutdentID as FStudentID,p.FPhoto1,p.FPhoto2,p.FPhoto3,p.FPhoto4,p.fphone,u.fsex,u.ftype,
+ 	DATE_FORMAT(p.FDate,'%w' ) as week,
+ 	DATE_FORMAT(p.FDate,'%Y年%c月%e日' ) as FDate,
+ 	DATE_FORMAT(p.FDate,'%k:%i' ) as time  from t_practice p
+ 	inner join t_user u on p.FPhone = u.fphone
+ 	where FSutdentID = #{FStudentID} and DATE_FORMAT(p.FDate,'%Y年%c月%e日' ) = #{fdate}
+ 	order by p.FDate
+ 	
+	</select>	
+	
+	<select id="studentPracticeID" parameterType="String" resultType="Practice">
+ 	select p.*,u.fsex,u.ftype from t_practice p
+ 	inner join t_user u on p.FPhone = u.fphone
+ 	where FSutdentID = #{FStudentID}
+	</select>	
+</mapper>

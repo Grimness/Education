@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.UserMapper" >
+
+ <select id="getteacher" parameterType="User" resultType="User">
+		select  b.fname as schoolname,c.fname as areaname,d.fname as fsubjectid, a.*  from t_user a 
+		left outer join t_school b on a. fschoolid=b.fid
+	left outer  join t_area c on a.fareaid=c.fparentid
+	left outer join t_SubMesType d on a.fsubjectid=d.FNumber
+	where a.ftype=0
+	order by a.fid
+	  </select>  
+	  
+ <select id="searchteacher" parameterType="User" resultType="User">
+		select  b.fname as schoolname,c.fname as areaname,d.fname as fsubjectid, a.*  from t_user a 
+		left outer join t_school b on a. fschoolid=b.fid
+	left outer  join t_area c on a.fareaid=c.fparentid
+	left outer join t_SubMesType d on a.fsubjectid=d.FNumber
+	where a.ftype=0 and a.fname=#{fname} or a.fphone=#{fphone}
+	order by a.fid
+	  </select>  
+
+
+<select id="teacherlogin" parameterType="String" resultType="Teacher">
+		SELECT * from t_user where fphone=#{fphone} and fpassword=#{fpassword} and ftype=0
+	  </select> 
+<select id="parentslogin" parameterType="String" resultType="Parents">
+		SELECT * from t_user where fphone=#{fphone} and fpassword=#{fpassword} and ftype=1
+	  </select> 	  
+ <update id="updateteacher_right" parameterType="User" >
+	  	update t_user set fright=#{fright} where fid=#{fid}
+	  </update>	  
+	  
+  <select id="getparents" parameterType="User" resultType="User">
+		select b.fname as areaname,a.* from t_user a
+	  left outer join t_area b on a.fareaid=b.fparentid where a.ftype=1 order by a.fid
+	  </select> 
+	  
+	  <select id="searchparents" parameterType="User" resultType="User">
+		select b.fname as areaname,a.* from t_user a
+	  left outer join t_area b on a.fareaid=b.fparentid where a.ftype=1 and a.fname=#{fname} or a.fphone=#{fphone}
+	  order by a.fid
+	  </select> 
+	     
+ <update id="updateparents_right" parameterType="User" >
+	  	update t_user set fright=#{fright} where fid=#{fid}
+	  </update>	 	  
+	<select id="teachercheck" parameterType="String" resultType="Teacher">
+	select * from t_user where fphone=#{fphone}
+	  </select>  
+	
+	  <select id="getarea" parameterType="Area" resultType="Area">
+	select * from t_area
+	  </select> 
+	   <select id="getschool" parameterType="School" resultType="School">
+	select * from t_school
+	  </select> 
+	  
+	 <update id="addteacher_type" parameterType="String" >
+	  	update t_user set ftype=0 where fphone=#{fphone}
+	  </update>	 
+	   
+	   <update id="addparents_type" parameterType="String" >
+	  	update t_user set ftype=1 where fphone=#{fphone}
+	  </update>	 
+	   
+	   <insert id="addteacher" parameterType="String">
+		insert into t_user (fphone,fpassword) values(#{fphone},#{fpassword})
+	  </insert>	 	  
+	 
+	  <insert id="addteacher_data" parameterType="Teacher">
+		update t_user set fname=#{fname},fsex=#{fsex},fareaid=#{fareaid},fschoolid=#{fschoolid},fsubjectid=#{fsubjectid} where fphone=#{fphone} 
+	  </insert>	 
+	  <insert id="addparents_data" parameterType="Parents">
+		update t_user set fname=#{fname},fsex=#{fsex},fareaid=#{fareaid},fbirthday=#{fbirthday},fchildid=#{fchildid} where fphone=#{fphone} 
+	  </insert>	 	
+</mapper>
+
+

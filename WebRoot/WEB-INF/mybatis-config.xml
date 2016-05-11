@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- <environments default="development"> <environment id="development"> 
+		<transactionManager type="JDBC"/> <dataSource type="POOLED"> <property name="driver" 
+		value="oracle.jdbc.driver.OracleDriver"/> <property name="url" value="jdbc:oracle:thin:@192.168.1.200:1521:orcl"/> 
+		<property name="username" value="oaman"/> <property name="password" value="oaman"/> 
+		</dataSource> </environment> </environments> -->
+	<typeAliases>
+		<typeAlias type="java.lang.String" alias="String" />
+		<typeAlias type="java.lang.Integer" alias="Integer" />
+		<typeAlias type="java.lang.Long" alias="Long" />
+		
+		<typeAlias type="com.ibatis.model.User" alias="User" />
+		<typeAlias type="com.ibatis.model.json.Teacher" alias="Teacher" />
+		<typeAlias type="com.ibatis.model.json.Parents" alias="Parents" />
+		<typeAlias type="com.ibatis.model.json.Area" alias="Area" />
+		<typeAlias type="com.ibatis.model.json.School" alias="School" />
+		<typeAlias type="com.ibatis.model.json.Students" alias="Students" />
+		<typeAlias type="com.ibatis.model.Exercise" alias="Exercise" />
+		<typeAlias type="com.ibatis.model.SubMessage" alias="SubMessage" />
+		<typeAlias type="com.ibatis.model.Material" alias="Material" />
+		<typeAlias type="com.ibatis.model.Child" alias="Child" />
+		<typeAlias type="com.ibatis.model.ExaminationList" alias="ExaminationList" />
+		<typeAlias type="com.ibatis.model.Exercisetem" alias="Exercisetem" />
+		<typeAlias type="com.ibatis.model.Examination" alias="Examination" />
+		
+		
+		<typeAlias type="com.ibatis.model.TeacherClass" alias="TeacherClass" />
+		<typeAlias type="com.ibatis.model.json.Points" alias="Points" />
+		<typeAlias type="com.ibatis.model.json.PointsList" alias="PointsList" />
+		<typeAlias type="com.ibatis.model.FChild" alias="FChild" />
+		<typeAlias type="com.ibatis.model.Practice" alias="Practice" />
+		<typeAlias type="com.ibatis.model.ERecord" alias="ERecord" />
+		<typeAlias type="com.ibatis.model.Evaluation" alias="Evaluation" />
+		<typeAlias type="com.ibatis.model.MistakesResult" alias="MistakesResult" />
+		<typeAlias type="com.ibatis.model.ScanRecord" alias="ScanRecord" />
+		<typeAlias type="com.ibatis.model.QCode" alias="QCode" />
+		
+		<typeAlias type="com.ibatis.model.Homeupdate" alias="Homeupdate" />
+		<typeAlias type="com.ibatis.model.Psychology" alias="Psychology"/>
+		<typeAlias type="com.ibatis.model.json.Students" alias="Students" />
+		<typeAlias type="com.ibatis.model.Homework" alias="Homework"/>
+		<typeAlias type="com.ibatis.model.Games" alias="Games" />
+		<typeAlias type="com.ibatis.model.GamesOne" alias="GamesOne" />
+	</typeAliases>
+	<mappers>
+		<mapper class="com.ibatis.mapper.UserMapper" />
+		<mapper class="com.ibatis.mapper.ExerciseMapper" />
+		
+		<mapper class="com.ibatis.mapper.PointMapper" />		
+		<mapper class="com.ibatis.mapper.TeacherClassMapper" />	
+		<mapper class="com.ibatis.mapper.ERecordMapper"/>
+		<mapper class="com.ibatis.mapper.ChildMapper"/>
+		<mapper class="com.ibatis.mapper.PracticeMapper"/>
+		<mapper class="com.ibatis.mapper.MistakesMapper"/>
+		<mapper class="com.ibatis.mapper.ScanMapper"/>
+		<mapper class="com.ibatis.mapper.QCodeMapper"/>
+		<mapper class="com.ibatis.mapper.GamesOneMapper"/>
+		
+		<mapper class="com.ibatis.mapper.PsychologyMapper"/>			
+	</mappers>
+</configuration>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.ScanMapper" >
+	
+	<!-- 扫描记录 -->
+	<select id="selectSRListByDate" parameterType="String" resultType="ScanRecord">
+		select  ts.fname,
+		CONCAT(' 《同步导学与优化训练-',tskm.FName,' ',tsnj.FName,' ',tssxc.FName,' ',tscb.FName,'》 ',tsdy.FName,' 第',tsks.FName,'课时') as ftitle,
+		DATE_FORMAT(ts.fdate,'%Y年%c月%e日' ) as fdate,
+		DATE_FORMAT(ts.fdate,'%k:%i' ) as ftime,
+		DATE_FORMAT(ts.fdate,'%w' ) as fweek,
+		ts.fphone from (select  r.fname,r.fdate,r.fphone
+		,SUBSTRing(r.fname,1,2) as FCBS
+		,SUBSTRing(r.fname,3,2) as FKM
+		,SUBSTRing(r.fname,5,1) as FNJ
+		,SUBSTRing(r.fname,6,1) as FSXC
+		,SUBSTRing(r.fname,7,2) as FDY
+		,SUBSTRing(r.fname,length(r.fname)-1,2)+1 as FKS from t_record r) ts 
+		inner join t_submessage tscb on  tscb.FParentID=5 and ts.fcbs=tscb.fnumber
+		left outer join t_submessage tskm on  tskm.FParentID=6 and ts.FKM=tskm.fnumber
+		left outer join t_submessage tsnj on  tsnj.FParentID=7 and ts.FNJ=tsnj.fnumber 
+		left outer join t_submessage tssxc on  tssxc.FParentID=8 and ts.fsxc=tssxc.fnumber
+		left outer join t_submessage tsdy on  tsdy.FParentID=3 and ts.fdy=tsdy.fnumber
+		left outer join t_submessage tsks on  tsks.FParentID=4 and ts.fks=tsks.fnumber
+		where fphone=#{FPhone} and DATE_FORMAT(ts.fdate,'%Y年%c月%e日' ) = #{FDate}
+		order by ts.fdate
+	</select>
+	
+	<!-- 通过总码查询课本名称 -->
+	<select id="getTitleName" parameterType="String" resultType="String">
+		select  distinct CONCAT(' 《同步导学与优化训练-',tskm.FName,' ',tsnj.FName,' ',tssxc.FName,' ',tscb.FName,'》') as FFullName
+		 from (select distinct ts.FUnitQRCODE
+		,SUBSTRing(ts.funitqrcode,1,2) as FCBS
+		,SUBSTRing(ts.funitqrcode,3,2) as FKM
+		,SUBSTRing(ts.funitqrcode,5,1) as FNJ
+		,SUBSTRing(ts.funitqrcode,6,1) as FSXC
+		from t_exercise ts where ts.FVolumeQRCODE = #{FName}) ts1
+		inner join t_submessage tscb on  tscb.FParentID=5 and ts1.fcbs=tscb.fnumber
+		left outer join t_submessage tskm on  tskm.FParentID=6 and ts1.FKM=tskm.fnumber
+		left outer join t_submessage tsnj on  tsnj.FParentID=7 and ts1.FNJ=tsnj.fnumber 
+		left outer join t_submessage tssxc on  tssxc.FParentID=8 and ts1.fsxc=tssxc.fnumber
+		order by ts1.FUnitQRCODE
+	</select>
+	
+	<!-- 查询二维码总码记录 -->
+	<select id="getQRCode" parameterType="String" resultType="ScanRecord">
+		select fid,fname,fphone,
+		DATE_FORMAT(fdate,'%Y年%c月%e日' ) as fdate,
+		DATE_FORMAT(fdate,'%k:%i' ) as ftime,
+		DATE_FORMAT(fdate,'%w' ) as fweek
+		from t_record  where fphone = #{FPhone} and fname like 'NN%'
+	</select>
+	
+	<select id="dateGroupSRecord" parameterType="String" resultType="String">
+ 	select DATE_FORMAT(r.fdate,'%Y年%c月%e日' ) as FDate
+	from t_record r
+ 	where fphone = #{FPhone}
+ 	group by DATE_FORMAT(r.fdate,'%Y年%c月%e日')
+ 	order by r.fdate
+	</select>	
+	
+	<!-- 添加扫描记录 -->
+	<insert id="insertScanRecord" parameterType="ScanRecord">
+		insert into t_record(fdate,fname,fphone) value(#{fdate},#{fname},#{fphone})
+	</insert>
+</mapper>

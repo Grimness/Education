@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.PsychologyMapper">
+
+	<select id="selectPsychologyFPhone" parameterType="Psychology" resultType="Psychology">
+		select FName,FPhone,FTitle,FPicture1,FPicture2,FContactPhone,FConsultingContent2,FConsultingContent3,FConsultingContent1 from t_psychology f
+		where f.Fphone=#{FPhone}
+	</select>
+	<select id="selectHomewoek" parameterType="user" resultType="Homework">
+	select fclassid,fvolume,fsubjectid,fhourid,fpicture,fphone,fqrcode1,fhourdesc,fclasscode,fname,fgradeid,fimg,fsynchronization,freleasetime from t_assigningHomework a where a.fphone=#{fphone}
+	</select>
+	 <insert id="insertHomework" parameterType="Homework" >
+		insert into t_assigningHomework (fphone,FQRCode1,fclasscode,FName,freleasetime,FUserName) 
+		values(#{fphone},#{FQRCode1},#{fclasscode},#{FName},#{freleasetime},#{FUserName})
+	</insert>
+	
+	<insert id="insertCheckMarking" parameterType="Homework">
+		insert into t_homeworkcheck (fphone,fclasscode,fimg,fchildid,FQRCode1,assigninghomework)values(#{fphone},#{fclasscode},#{fimg},#{FChildid},#{FQRCode1},#{assigninghomework})
+	</insert>
+	<!--教师端布置作业  -->
+	<select id="selectSubmessage" parameterType="Homework" resultType="Homework">
+	select distinct s1.fnumber,a.FReleasetime, a.fclasscode as Fclasscode,a.FQRCode1 as FQRCode1, s.fname as Fsubjectid,s2.fname as Fvolume,s3.fname as Fhourid,e.FHourDesc as FHourDesc,c.fname as fclassid, ct.fname as fgradeid from t_assigninghomework a
+	
+	inner join t_exercise e on a.fqrcode1=e.fqrcode1
+	inner join t_teacherclass t on a.fclasscode=t.fclasscode
+	inner join t_class c on  t.fclassid=c.fnumber and c.ftype=1
+	inner join t_class ct on  t.fgradeid=ct.fnumber and ct.ftype=0						
+	inner join t_submessage s on e.fsubjectid=s.fnumber and s.fparentid=6
+	inner join t_submessage s1 on e.fclassid=s1.fnumber and s1.fparentid=7
+	inner join t_submessage s2 on e.fvolume=s2.fnumber and s2.fparentid=8
+	inner join t_submessage s3 on e.fhourid=s3.fnumber and s3.fparentid=3
+	where a.fphone=#{fphone}  and e.FHourDesc <![CDATA[<>'']]>
+	</select>
+ 	<select id="selectTeacherClass" parameterType="TeacherClass" resultType="TeacherClass">
+	select t.fid as fid,t.fclasscode as fclasscode,u.fname as fname, c.fname as fclassid, ct.fname as fgradeid from t_teacherclass t
+	inner join t_user u on t.fphone = u.fphone
+	inner join t_class c on  t.fclassid=c.fnumber and c.ftype=1
+	inner join t_class ct on  t.fgradeid=ct.fnumber and ct.ftype=0
+	where t.fphone=#{fphone}
+	</select>
+	<select id="selectExercise" parameterType="User" resultType="Exercise">
+	select e.FUnitQRCODE as FUnitQRCODE,e.FQRCode1 as FQRCode1,e.FHourDesc as FHourDesc,e.FTitle1 as FTitle1,e.FTitle2 as FTitle2 from t_user u
+	inner join t_exercise e on u.fsubjectid=e.fsubjectid where u.fphone=#{fphone}
+	</select>
+	
+	<select id="selectExercise1" parameterType="User" resultType="Exercise">
+	select s.fname as FFileName from t_user u 
+	inner join t_Submessage s on u.fsubjectid=s.fnumber and s.fparentid=6
+	where u.fphone=#{fphone}
+	</select>
+	
+	<update id="updateHomework" parameterType="Homework">
+	update t_assigningHomework set fphone=#{fphone},FQRCode1=#{FQRCode1},fclasscode=#{fclasscode},Fsynchronization=#{Fsynchronization},freleasetime=#{freleasetime},FFileName=#{FFileName} where fphone=#{fphone}
+	</update>
+	<select id="selectOperationCheck" parameterType="Homework" resultType="Homework">
+	select distinct a.fusername,a.FQRCode1,a.fid as assigninghomework,u.fchildid,u.fchildid2,sd.fname as fstudentname,t.fclasscode,a.FReleasetime, s.fname as Fsubjectid,s2.fname as Fvolume,s3.fname as Fhourid,e.FHourDesc as FHourDesc,c.fname as fclassid, ct.fname as fgradeid from t_students sd
+	inner join t_user u on  sd.fstudentno = #{FChildid} or sd.fstudentno=#{FChildid}
+
+	inner join t_assigninghomework a on  sd.fclassid = a.fclasscode
+	
+	inner join t_teacherclass t on a.fclasscode=t.fclasscode
+	inner join t_exercise e on a.fqrcode1=e.fqrcode1
+	
+	inner join t_class c on  t.fclassid=c.fnumber and c.ftype=1
+	inner join t_class ct on  t.fgradeid=ct.fnumber and ct.ftype=0						
+	inner join t_submessage s on e.fsubjectid=s.fnumber and s.fparentid=6
+	inner join t_submessage s1 on e.fclassid=s1.fnumber and s1.fparentid=7
+	inner join t_submessage s2 on e.fvolume=s2.fnumber and s2.fparentid=8
+	inner join t_submessage s3 on e.fhourid=s3.fnumber and s3.fparentid=3
+	where u.fphone=#{fphone}  and e.FHourDesc <![CDATA[<>'']]> and (u.fchildid=#{FChildid} or u.fchildid2=#{FChildid})
+	</select>
+	<!--作业上传后查看  -->
+	<select id="selectCheckMarking" parameterType="Homework" resultType="Homework">
+	SELECT DISTINCT h.fcomment as Fcomment,h.finspect as Finspect,s4.FName as Students,h.fimg as Fimg,h.fscore as Fscore,u.fname as FName,a.FReleasetime,e.FQRCode1,t.fclasscode, s.fname AS Fsubjectid,s2.fname AS Fvolume,s3.fname AS Fhourid,e.FHourDesc AS FHourDesc,c.fname AS fclassid, ct.fname AS fgradeid FROM t_homeworkcheck h  
+	inner join t_students s4 ON h.FChildid = s4.FStudentNo
+	inner join t_exercise e ON h.fqrcode1=e.fqrcode1
+	inner join t_teacherclass t ON s4.fClassID=t.fclasscode
+	inner join t_assigninghomework a ON h.FQRCode1 = a.FQRCode1 AND h.Fclasscode = a.fclasscode
+	inner join t_user u ON a.fphone = u.fphone
+	inner join t_class c ON  t.fclassid=c.fnumber AND c.ftype=1
+	inner join t_class ct ON  t.fgradeid=ct.fnumber AND ct.ftype=0						
+	inner join t_submessage s ON e.fsubjectid=s.fnumber AND s.fparentid=6
+	inner join t_submessage s1 ON e.fclassid=s1.fnumber AND s1.fparentid=7
+	inner join t_submessage s2 ON e.fvolume=s2.fnumber AND s2.fparentid=8
+	inner join t_submessage s3 ON e.fhourid=s3.fnumber AND s3.fparentid=3
+	WHERE h.fphone = #{Fphone} AND e.FHourDesc <![CDATA[<>'']]> and (h.FChildid=#{FChildid} or h.FQRCode1=#{FQRCode1})
+	</select>
+	<!-- 老师端作业状态 -->
+	<select id="selectJobStatus" parameterType="Homework" resultType="Homework">
+	SELECT distinct a.fid as Fid,s5.FName as Students,a.fphone,s5.fstudentno as FChildid,u.fname as FName,a.FReleasetime,e.FQRCode1,t.fclasscode, s.fname AS Fsubjectid,s2.fname AS Fvolume,s3.fname AS Fhourid,e.FHourDesc AS FHourDesc,c.fname AS fclassid, ct.fname AS fgradeid FROM t_assigninghomework a  
+	INNER JOIN t_students s5 ON a.fclasscode = s5.fClassID
+	INNER JOIN t_exercise e ON a.fqrcode1=e.fqrcode1
+	INNER JOIN t_teacherclass t ON s5.fClassID=t.fclasscode
+	INNER JOIN t_user u ON a.fphone = u.fphone
+	INNER JOIN t_class c ON  t.fclassid=c.fnumber AND c.ftype=1
+	INNER JOIN t_class ct ON  t.fgradeid=ct.fnumber AND ct.ftype=0						
+	INNER JOIN t_submessage s ON e.fsubjectid=s.fnumber AND s.fparentid=6
+	INNER JOIN t_submessage s1 ON e.fclassid=s1.fnumber AND s1.fparentid=7
+	INNER JOIN t_submessage s2 ON e.fvolume=s2.fnumber AND s2.fparentid=8
+	INNER JOIN t_submessage s3 ON e.fhourid=s3.fnumber AND s3.fparentid=3
+	WHERE a.fclasscode = #{fclasscode} AND e.FHourDesc <![CDATA[<>'']]> 
+	</select>
+	<!--查看作业情况  -->
+	<select id="selectCheckingHomework" parameterType="Homework" resultType="Homework">
+	select distinct h.fcomment as Fcomment,h.finspect as Finspect,a.FUserName as FUserName,h.fid as Fid,h.assigninghomework AS assigninghomework,h.fscore as Fscore,h.fimg as Fimg,a.FQRCode1,u.fchildid,u.fchildid2,sd.fname as fstudentname,t.fclasscode,a.FReleasetime, s.fname as Fsubjectid,s2.fname as Fvolume,s3.fname as Fhourid,e.FHourDesc as FHourDesc,c.fname as Fclassid, ct.fname as fgradeid from t_user u
+	
+	inner join t_students sd on  sd.fstudentno = #{FChildid} or sd.fstudentno=#{FChildid}
+	INNER JOIN t_assigninghomework a ON  sd.fclassid = a.fclasscode
+	LEFT JOIN t_homeworkcheck h ON a.fid = h.assigninghomework
+	INNER JOIN t_teacherclass t ON a.fclasscode=t.fclasscode
+	INNER JOIN t_exercise e ON a.fqrcode1=e.fqrcode1
+	INNER JOIN t_class c ON  t.fclassid=c.fnumber AND c.ftype=1
+	INNER JOIN t_class ct ON  t.fgradeid=ct.fnumber AND ct.ftype=0						
+	INNER JOIN t_submessage s ON e.fsubjectid=s.fnumber AND s.fparentid=6
+	INNER JOIN t_submessage s1 ON e.fclassid=s1.fnumber AND s1.fparentid=7
+	INNER JOIN t_submessage s2 ON e.fvolume=s2.fnumber AND s2.fparentid=8
+	INNER JOIN t_submessage s3 ON e.fhourid=s3.fnumber AND s3.fparentid=3
+	where a.fclasscode=#{fclasscode}  and e.FHourDesc <![CDATA[<>'']]> and (u.fchildid=#{FChildid} or u.fchildid2=#{FChildid}) and a.fid = #{fid}
+	</select>
+	<!--作业辅导  -->
+	<select id="selectCheckAnswer3" parameterType="Homework" resultType="Homework">
+		select * from t_exercise where fqrcode1=#{FQRCode1}  order by FTitle
+	</select>
+	<update id="updateHome" parameterType="homeupdate">
+	 update t_homeworkcheck set Finspect=#{Finspect},Fscore=#{Fscore},fcomment=#{fcomment} where fid = #{fid}
+	</update>
+</mapper>

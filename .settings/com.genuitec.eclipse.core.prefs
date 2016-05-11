@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+validator.Checked=WebRoot/js/jquery-1.6.min.js,WebRoot/jsp/task/WrongQuestion.jsp,WebRoot/jsp/backstage2/ks_QR.jsp,WebRoot/jsp/backstage2/dy_QR.jsp,WebRoot/plugins/code/prettify.js
+validator.Unchecked=

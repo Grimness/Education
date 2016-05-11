@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.ExerciseMapper" >
+	
+	<insert id="addexercise_data" parameterType="Exercise">
+	insert into t_exercise (FTitle,FHourDesc,FQRCode1,FTitle1,FTitle2,FLabel,FAnswer,FQRCode2,fsubjectid,fversionid,fclassid,FVolume,funit,FVolumeQRCODE,FUnitQRCODE,FHourID,fsettime,FAudioFileName)
+	values(#{FTitle},#{FHourDesc},#{FQRCode1},#{FTitle1},#{FTitle2},#{FLabel},#{FAnswer},#{FQRCode2},#{fsubjectid},#{fversionid},#{fclassid},#{FVolume},#{funit},#{FVolumeQRCODE},#{FUnitQRCODE},#{FHourID},curdate(),#{FAudioFileName})
+	</insert>	 
+<select id="viewexercise_data" parameterType="Exercise" resultType="Exercise">
+		SELECT * from t_exercise where  fsubjectid=#{fsubjectid} and fversionid=#{fversionid} and fclassid=#{fclassid} and FVolume=#{FVolume} and funit=#{funit}  and FHourID=#{FHourID} 
+		order by FTitle
+	  </select> 
+	  
+	 <select id="viewpng" parameterType="String" resultType="Exercise">
+		SELECT * from t_exercise where  fid=#{fid}
+	  </select>  
+	  
+	   <select id="getdy" parameterType="String" resultType="SubMessage">
+		SELECT * from T_SubMessage where  FParentID=3 order by fid
+	  </select> 
+	  
+	  <select id="getks" parameterType="String" resultType="SubMessage">
+		SELECT * from T_SubMessage where  FParentID=4 order  by fid
+	  </select> 
+	  
+	    <delete id="deldy" parameterType="SubMessage" >
+		delete from T_SubMessage where  fid=#{fid}
+	  </delete> 
+	  
+	  <select id="dycheck" parameterType="SubMessage" resultType="SubMessage">
+		SELECT * from T_SubMessage where  FParentID=3 and FNumber=#{FNumber}
+	  </select> 
+	  
+	   <select id="kscheck" parameterType="SubMessage" resultType="SubMessage">
+		SELECT * from T_SubMessage where  FParentID=4 and FNumber=#{FNumber}
+	  </select> 
+	  
+	  <update id="changedy" parameterType="String">
+	update t_submessage set FNumber=#{FNumber},FName=#{FName}  where fid=#{fid}
+	</update>
+	
+	<insert id="adddy" parameterType="SubMessage">
+	insert into t_submessage(fnumber,fname,fparentid) values(#{FNumber},#{FName} ,3) 
+	</insert>	
+	
+	<insert id="addks" parameterType="SubMessage">
+	insert into t_submessage(fnumber,fname,fparentid) values(#{FNumber},#{FName} ,4) 
+	</insert> 	
+	 <!-- 通过总码二维码查询单元 --> 
+	<select id="getExerciseByQRCode" parameterType="String" resultType="Exercise">
+		select distinct ts1.FUnitQRCODE,CONCAT(tscb.FName,'_',tskm.FName,'_',tsnj.FName,'_',tssxc.FName,'_',tsdy.FName) as FFullName
+		 from (select distinct ts.FUnitQRCODE
+		,SUBSTRing(ts.funitqrcode,1,2) as FCBS
+		,SUBSTRing(ts.funitqrcode,3,2) as FKM
+		,SUBSTRing(ts.funitqrcode,5,1) as FNJ
+		,SUBSTRing(ts.funitqrcode,6,1) as FSXC
+		,SUBSTRing(ts.funitqrcode,7,2) as FDY from t_exercise ts where ts.FVolumeQRCODE=#{FQRCode}) ts1
+		inner join t_submessage tscb on  tscb.FParentID=5 and ts1.fcbs=tscb.fnumber 
+		left outer join t_submessage tskm on  tskm.FParentID=6 and ts1.FKM=tskm.fnumber 
+		left outer join t_submessage tsnj on  tsnj.FParentID=7 and ts1.FNJ=tsnj.fnumber 
+		left outer join t_submessage tssxc on  tssxc.FParentID=8 and ts1.fsxc=tssxc.fnumber 
+		left outer join t_submessage tsdy on  tsdy.FParentID=3 and ts1.fdy=tsdy.fnumber 
+		order by ts1.FUnitQRCODE
+	</select> 	
+	
+	 <!-- 通过单元二维码查询课时 --> 
+	<select id="getExerciseByQRCodeUnit" parameterType="String" resultType="Exercise">
+		select distinct FQRCode1,FRemark1 from t_exercise where funitqrcode=#{FUnitCode}
+	</select> 	  	  
+	 <!-- 通过课时二维码获得题目 --> 
+	<select id="getExerciseByQRCodeHour" parameterType="String" resultType="Exercise">
+		select * from t_exercise where fqrcode1=#{FHourCode}  order by FTitle
+	</select> 	  
+	 <!-- 通过微课二维码获得题目 --> 
+	<select id="getExerciseByQRCodeWK" parameterType="String" resultType="Exercise">
+		select * from t_exercise where fqrcode2=#{FWKCode}
+	</select>
+	 <!-- 通过课时二维码获得唯一课时标题 --> 	
+	 <select id="getKSByQRCodeHour" parameterType="String" resultType="Exercise">
+		select * from t_exercise where fqrcode1=#{FHourCode}  group by fqrcode1
+	</select>
+	 <!-- 查询二维码插入查询记录--> 
+	 <!-- 导入公共材料--> 	
+	   <insert id="addmaterial" parameterType="Material">
+	insert into t_material(ftitle,fdetails) values(#{ftitle},#{fdetails}) 
+	</insert>
+	 <select id="getmaterial" parameterType="Material" resultType="Material">
+		select * from t_material order by fid
+	</select>
+	<insert id="addexercise_data1" parameterType="Exercise">
+	insert into t_exercise (FHourDesc,FTitle1,FTitle2,FLabel,fsubjectid,fversionid,fclassid,FVolume,funit,FHourID,fsettime,FTitle3,FTitle4,FFileName,FAnsFileName,FPointersFileName,FTipsFileName,FGGFileName,FAnsGGName,FGyFileName,FGGFileName2,FGGFileName3,FGGFileName4,FAnsGGName2,FAnsGGName3,FAnsGGName4,FLabel1,FLabel2,FLabel3,FLabel4,FPointersFileName1,FPointersFileName2,FPointersFileName3,FPointersFileName4,FTipsFileName1,FTipsFileName2,FTipsFileName3,FTipsFileName4,FYYLabel,FYYtlqs,FYYAudioFileName,FYYtlan,FYYmaterial,FAudioFileName,FGGTitle1,FGGTitle2,FGGTitle3,FGGTitle4,FUnitQRCODE,FQRCode1,FYYLabel1,FVolumeQRCODE,Flistenmaterial,FTitle)
+	values(#{FHourDesc},#{FTitle1},#{FTitle2},#{FLabel},#{fsubjectid},#{fversionid},#{fclassid},#{FVolume},#{funit},#{FHourID},NOW(),#{FTitle3},#{FTitle4},#{FFileName},#{FAnsFileName},#{FPointersFileName},#{FTipsFileName},#{FGGFileName},#{FAnsGGName},#{FGyFileName},#{FGGFileName2},#{FGGFileName3},#{FGGFileName4},#{FAnsGGName2},#{FAnsGGName3},#{FAnsGGName4},#{FLabel1},#{FLabel2},#{FLabel3},#{FLabel4},#{FPointersFileName1},#{FPointersFileName2},#{FPointersFileName3},#{FPointersFileName4},#{FTipsFileName1},#{FTipsFileName2},#{FTipsFileName3},#{FTipsFileName4},#{FYYLabel},#{FYYtlqs},#{FYYAudioFileName},#{FYYtlan},#{FYYmaterial},#{FAudioFileName},#{FGGTitle1},#{FGGTitle2},#{FGGTitle3},#{FGGTitle4},#{FUnitQRCODE},#{FQRCode1},#{FYYLabel1},#{FVolumeQRCODE},#{Flistenmaterial},#{FTitle} )
+	</insert>
+	
+	<update id="alter_exercise" parameterType="Exercise">
+	update t_exercise set FTitle1=#{FTitle1},FTitle2=#{FTitle2},FTitle3=#{FTitle3},FTitle4=#{FTitle4},FHourDesc=#{FHourDesc},FGyFileName=#{FGyFileName},FLabel=#{FLabel},FFileName=#{FFileName},FAnsFileName=#{FAnsFileName},FPointersFileName=#{FPointersFileName},FTipsFileName=#{FTipsFileName},FGGFileName=#{FGGFileName},FAnsGGName=#{FAnsGGName},
+	FGGFileName2=#{FGGFileName2},FAnsGGName2=#{FAnsGGName2},FGGFileName3=#{FGGFileName3},FAnsGGName3=#{FAnsGGName3},FGGFileName4=#{FGGFileName4},FAnsGGName4=#{FAnsGGName4},
+	FLabel1=#{FLabel1},FLabel2=#{FLabel2},FLabel3=#{FLabel3},FLabel4=#{FLabel4},
+	FPointersFileName1=#{FPointersFileName1},FTipsFileName1=#{FTipsFileName1},	
+	FPointersFileName2=#{FPointersFileName2},FTipsFileName2=#{FTipsFileName2},
+	FPointersFileName3=#{FPointersFileName3},FTipsFileName3=#{FTipsFileName3},
+	FPointersFileName4=#{FPointersFileName4},FTipsFileName4=#{FTipsFileName4},
+	FYYLabel=#{FYYLabel},FYYtlqs=#{FYYtlqs},FYYtlan=#{FYYtlan},FTitle=#{FTitle},
+	FYYLabel1=#{FYYLabel1},Flistenmaterial=#{Flistenmaterial},FAudioFileName=#{FAudioFileName},FYYAudioFileName=#{FYYAudioFileName},
+	FYYmaterial=#{FYYmaterial},FGGTitle1=#{FGGTitle1},FGGTitle2=#{FGGTitle2},FGGTitle3=#{FGGTitle3},FGGTitle4=#{FGGTitle4}
+	where fid=#{fid}
+	</update>
+	 
+	 <update id="add_ksqr" parameterType="Exercise">
+	update t_exercise set FVolumeQRCODE=#{FVolumeQRCODE}	
+	where fsubjectid=#{fsubjectid} and fversionid=#{fversionid} and fclassid=#{fclassid} and FVolume=#{FVolume}  
+	</update>
+	 
+	  <update id="add_wkqr" parameterType="Exercise">
+	update t_exercise set Fwkmaterial=#{Fwkmaterial},FQRCode2=#{FQRCode2}	
+	where fid=#{fid} 
+	</update>
+	
+	<insert id="add_tx" parameterType="ExaminationList">
+	insert into t_examinationList(FExamID,Fname) values(#{FExamID},#{Fname})
+	</insert>
+	
+	 <select id="check_tx" parameterType="ExaminationList" resultType="ExaminationList">
+		select * from t_examinationList where FExamID=#{FExamID}  order by exfid
+	</select>
+	
+	<delete id="delete_tx" parameterType="ExaminationList">	
+		delete from t_examinationList where exfid=#{exfid}
+	</delete> 
+	
+	 <select id="get_tx" parameterType="ExaminationList" resultType="ExaminationList">
+		select * from t_examinationList where exfid=#{exfid}  order by exfid
+	</select>
+	
+	<select id="viewexercise_data1" parameterType="Exercise" resultType="Exercise">
+		SELECT * from t_exercise where  fsubjectid =#{fsubjectid} and fversionid =#{fversionid} and fclassid = #{fclassid} and FVolume =#{FVolume} and funit = #{funit} 
+		order by FTitle
+	  </select> 
+	
+		<insert id="add_testpaper" parameterType="Exercisetem">
+	insert into t_exercisetem select a.*,#{exfid} as exfid,#{FExamID} as FExamID ,#{Fnumber} as Fnumber from  t_exercise a where a.fid=#{fid}
+	</insert>
+		<select id="check_testpaper" parameterType="Exercisetem" resultType="Exercisetem">
+		select * from t_exercisetem where FExamID=#{FExamID} and exfid=#{exfid} order by FTitle
+	  </select> 
+	  
+	  	<select id="check_testpaperall" parameterType="Exercisetem" resultType="Exercisetem">
+		select * from t_exercisetem where FExamID=#{FExamID} order by exfid
+	  </select> 
+	  
+	  <delete id="delete_testpaper" parameterType="Exercisetem">	
+		delete from t_exercisetem where exfid=#{exfid} and FExamID=#{FExamID} and fid=#{fid}
+	</delete>
+	
+		<select id="view_testpaper" parameterType="Exercisetem" resultType="Exercisetem">
+		select * from t_exercisetem where FExamID=#{FExamID} and exfid=#{exfid} and fid=#{fid}
+	  </select> 
+		
+		<update id="alter_tsex" parameterType="Exercisetem">
+	update t_exercisetem set FTitle1=#{FTitle1},FTitle2=#{FTitle2},FTitle3=#{FTitle3},FTitle4=#{FTitle4},FHourDesc=#{FHourDesc},FGyFileName=#{FGyFileName},FLabel=#{FLabel},FFileName=#{FFileName},FAnsFileName=#{FAnsFileName},FPointersFileName=#{FPointersFileName},FTipsFileName=#{FTipsFileName},FGGFileName=#{FGGFileName},FAnsGGName=#{FAnsGGName},
+	FGGFileName2=#{FGGFileName2},FAnsGGName2=#{FAnsGGName2},FGGFileName3=#{FGGFileName3},FAnsGGName3=#{FAnsGGName3},FGGFileName4=#{FGGFileName4},FAnsGGName4=#{FAnsGGName4},
+	FLabel1=#{FLabel1},FLabel2=#{FLabel2},FLabel3=#{FLabel3},FLabel4=#{FLabel4},
+	FPointersFileName1=#{FPointersFileName1},FTipsFileName1=#{FTipsFileName1},	
+	FPointersFileName2=#{FPointersFileName2},FTipsFileName2=#{FTipsFileName2},
+	FPointersFileName3=#{FPointersFileName3},FTipsFileName3=#{FTipsFileName3},
+	FPointersFileName4=#{FPointersFileName4},FTipsFileName4=#{FTipsFileName4},
+	FYYLabel=#{FYYLabel},FYYtlqs=#{FYYtlqs},FYYtlan=#{FYYtlan},
+	FYYLabel1=#{FYYLabel1},
+	FYYmaterial=#{FYYmaterial},FGGTitle1=#{FGGTitle1},FGGTitle2=#{FGGTitle2},FGGTitle3=#{FGGTitle3},FGGTitle4=#{FGGTitle4}
+	where fid=#{fid} and FExamID=#{FExamID} and exfid=#{exfid}
+	</update>
+	  <delete id="delete_testpaper1" parameterType="Exercisetem">	
+		delete from t_exercisetem where exfid=#{exfid} and FExamID=#{FExamID} 
+	</delete>
+	
+	 <delete id="delete_testpaper2" parameterType="Exercisetem">	
+		delete from t_exercisetem where  FExamID=#{FExamID} 
+	</delete>
+	
+	<delete id="delete_tx1" parameterType="ExaminationList">	
+		delete from t_examinationList where FExamID=#{FExamID}
+	</delete>
+	
+	<delete id="delete_examination" parameterType="Examination">	
+		delete from t_examination where FExamID=#{FExamID}
+	</delete>
+	
+		<insert id="add_examination" parameterType="Examination">
+	insert into t_examination (fname,FDESC,FExamID,fsettime) values(#{fname},#{FDESC},#{FExamID},NOW())
+	</insert>
+	
+	  <select id="getexamination" resultType="Examination">	
+		select * from t_examination 
+	</select>
+	
+	 <select id="alter_examination" parameterType="Examination" resultType="Examination">	
+		select * from t_examination where FExamID=#{FExamID}
+	</select>
+	
+	<update id="alter_examination_fin" parameterType="Examination">
+	update t_examination set fname=#{fname},FDESC=#{FDESC}	where FExamID=#{FExamID}
+	</update>
+	
+	<select id="view_examination" parameterType="Exercisetem" resultType="Exercisetem">	
+		select a.*,b.* from t_examinationlist a
+		inner join t_exercisetem b on a.exfid=b.exfid and a.FExamID=b.FExamID
+		where a.FExamID=#{FExamID}
+	</select>
+	
+		<insert id="add_games" parameterType="Games">
+	insert into t_games (fsubjectid,fversionid,fclassid,FVolume,funit,FHourID,Ftitle,Fimg,Fanswer,Fdiscuss,Faudio,fsettime,number)
+	 values(#{fsubjectid},#{fversionid},#{fclassid},#{FVolume},#{funit},#{FHourID},#{Ftitle},#{Fimg},#{Fanswer},#{Fdiscuss},#{Faudio},NOW(),#{number})
+	</insert>
+	
+	<delete id="del_exercise" parameterType="Exercise" >
+		delete from T_exercise where  fid=#{fid}
+	  </delete> 
+	  <select id="getExerciseByID" parameterType="Integer" resultType="Exercise">
+		select * from  t_exercise where fid= #{fid}
+	</select>
+	
+	 <select id="selectGames" parameterType="Games" resultType="Games">
+	  	select g.* from t_games g where g.fversionid = #{fversionid} and g.fclassid = #{fclassid} and g.FVolume = #{FVolume} and g.funit = #{funit} order by g.number
+	  </select>
+	  
+	  	  <delete id="delectGames" parameterType="String">
+	  	delete from t_games where fid=#{fid}
+	  </delete>
+	  
+	  <update id="updateGames" parameterType="Games">
+	update t_games set fsubjectid=#{fsubjectid},fversionid=#{fversionid},fclassid=#{fclassid},FVolume=#{FVolume},funit=#{funit},FHourID=#{FHourID},Ftitle=#{Ftitle},Fimg=#{Fimg},Fanswer=#{Fanswer},Fdiscuss=#{Fdiscuss},Faudio=#{Faudio1},number=#{number} where fid=#{fid}
+	</update>
+	
+	  <select id="select_Games" parameterType="Integer" resultType="Games">
+	  	select  * from t_games where fid=#{fid}
+	  </select>
+	 
+	   <update id="add_dyqrm" parameterType="Exercise">
+	update t_exercise set FRemark1=#{FRemark1} where FUnitQRCODE=#{FUnitQRCODE}
+	</update> 
+	  
+</mapper>
+

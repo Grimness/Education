@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.GamesOneMapper">
+	<select id="select_GamesOne" parameterType="Games" resultType="Games">
+	select * from t_games_tem where fphone=#{fphone} order by number desc
+	</select>
+	<select id="selsctGamesOne" parameterType="GamesOne" resultType="GamesOne">
+	SELECT a.* FROM (
+	SELECT CONCAT(b.fversionid,b.FSubjectID,b.Fclassid,b.FVolume,b.funit) AS fullname, b.* FROM t_games b ) a
+	WHERE a.fullname=SUBSTRING(#{FQRCode1},1,8)
+	</select>
+	<insert id="insertGamesOne" parameterType="Games">
+	insert into t_games_tem select a.*,#{Fphone} as Fphone from  t_games a where a.fid=#{fid}
+	</insert>
+	<delete id="deleteGamesOne" parameterType="Games">
+	delete from t_games_tem where fid=#{fid} and fphone=#{Fphone}
+	</delete>
+	<delete id="delete_GamesOne" parameterType="Games">
+	delete from t_games_tem where fphone=#{fphone}
+	</delete>
+</mapper>

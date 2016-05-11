@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.ChildMapper" >
+	<insert id="addChild" parameterType="FChild">
+		insert into t_students(fClassID,FStudentNo,FName,FGender,Fphone,FNote) value(#{fclasscode},#{fStudentNo},#{fname},#{fsex},#{fimgpath},#{fNote})
+	</insert>
+	
+	<select id="getChildByID" parameterType="String" resultType="FChild">
+			select  c.FStudentNo as fid ,c.fClassID as fclasscode ,c.FStudentNo as fStudentNo, c.FName as fname,c.FGender as fsex,c.FNote as fNote,c.Fphone as fimgpath,
+			c.fschoolid,sch.fname as fschoolname,c.fclass as fclassid,c.fgradeid,cg.fname as fgradename,ca.fname as fclassname,
+			c.fareaid,c.fareaname,c.fcityname,c.provincename as fprovincename
+			from  (select c3.*,a3.fname as provincename from(
+			select c2.*,a2.fname as fcityname,a2.fid as provinceid 
+			from(select c1.*,a1.fname as fareaname,a1.fid as cityid
+			from(select distinct s.*,tc.fschoolid,tc.fclassid as fclass,tc.fgradeid,tc.fclasscode,u.fareaid 
+			from t_students s
+			inner join t_teacherclass tc on s.fClassID =tc.fclasscode
+			inner join t_user u on u.fchildid=s.FStudentNo or u.fchildid2=s.FStudentNo
+			where s.FStudentNo=#{fid}) c1 left  join t_area a1  on a1.fparentid = c1.fareaid
+      		group by c1.fareaid)c2 left join t_area a2 on a2.fparentid = c2.cityid
+    		group by c2.fareaid)c3 left join t_area a3 on a3.fparentid = c3.provinceid
+      		group by c3.fareaid) c
+	   	 	inner join t_class ca on c.fclass =  ca.fnumber and ca.ftype=1
+	    	inner join t_class cg on c.fgradeid =  cg.fnumber and cg.ftype=0
+	 		left join t_school sch on sch.fid = c.fschoolid
+			where  c.FStudentNo=#{fid}
+	</select>
+	
+	<select id="getChildID" parameterType="FChild" resultType="String">
+	select FStudentNo as fid from t_students  where FName =#{fname}
+	</select>
+	    
+	<update id="updateChildName" parameterType="String" >
+	update t_students set FName=#{fname} where FStudentNo = #{fid}
+	</update>
+	
+	<select id="getProvince"  resultType="Area">
+		SELECT a.fparentid,a.fname  FROM t_area a
+		where a.fid = 0
+	   </select>   
+	   <select id="getCity" parameterType="String"  resultType="Area">
+		SELECT b.fparentid,b.fname FROM t_area a,t_area b
+		where a.fparentid = #{provinceid} and a.fparentid = b.fid 
+	   </select>
+	   
+	    <select id="getArea" parameterType="String"  resultType="Area">
+		SELECT c.fparentid,c.fname FROM t_area b,t_area c
+		where  b.fparentid = #{cityid} and b.fparentid = c.fid
+	   </select>
+	   
+	   <select id="getSchool" parameterType="String"  resultType="School">
+		select * from t_school where farea = #{fareaid}
+	   </select>
+	   
+	  
+	   
+	    <update id="updateFirstChild" parameterType="Parents" >
+	  	update t_user set fchildid=#{fchildid},fareaid=#{fareaid} where fphone=#{fphone}
+	  </update>	 
+	  
+	   <update id="updateSecondChild" parameterType="Parents" >
+	  	update t_user set fchildid2=#{fchildid2},fareaid=#{fareaid} where fphone=#{fphone}
+	  </update>	
+	  
+	    <select id="getParentsChild" parameterType="String" resultType="Parents">
+	  	select fphone,fchildid,fchildid2 from t_user  where fphone=#{fphone} 
+	  </select>	 
+	  
+ 	  <select id="getClass" parameterType="String" resultType="String">
+	  	select distinct fclasscode  from  t_teacherclass where fclasscode=#{fclasscode}
+	  </select>	 
+</mapper>

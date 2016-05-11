@@ -1,0 +1,66 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"+ request.getServerName() + ":" + request.getServerPort()+ path + "/";
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=basePath%>">
+<title>我的收藏</title>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<meta name="viewport" content="width=device-width,user-scalable=1" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<style type="text/css">
+	a{
+	 text-decoration: none; color: inherit;}
+	a:link {
+text-decoration: none;
+}
+a:visited {
+text-decoration: none;
+}
+a:hover {
+text-decoration: none;
+}
+a:active {
+text-decoration: none;
+}
+	</style>
+</head>
+<body style="background:#EAEAEA;">
+	<table border="0" style="border-collapse:collapse;width:100%;background:#FFFFFF;">
+	</table>
+	<table border="0" style="border-collapse:collapse;width:100%;margin :2% 0;background:#FFFFFF;" >
+		<tr style="height:80px;">
+			<td colspan="2"></td>
+		</tr>
+		<tr style="height:3px;">
+			<td colspan="2"><hr style="border:none;border-top:1px ridge #C4C4C4;" /></td>
+		</tr>
+		<tr style="height:25px;">
+			<td style="padding-left:3%;color:blue;"><a href="jsp/task/CheckAnswer.jsp" >查看答案>></a></td>
+			<td style="padding-right:3%;text-align:right;color:blue;"><a href="#">喜欢</a>&nbsp;<a href="#">下载</a></td>
+		</tr>
+	</table>
+	<table border="0" style="border-collapse:collapse;width:100%;margin :2% 0;background:#FFFFFF;" >
+		<tr style="height:80px;">
+			<td colspan="2"></td>
+		</tr>
+		<tr style="height:3px;">
+			<td colspan="2"><hr style="border:none;border-top:1px ridge #C4C4C4;" /></td>
+		</tr>
+		<tr style="height:25px;">
+			<td style="padding-left:3%;color:blue;"><a href="jsp/task/CheckAnswer.jsp" >查看答案>></a></td>
+			<td style="padding-right:3%;text-align:right;color:blue;"><a href="#">喜欢</a>&nbsp;<a href="#">下载</a></td>
+		</tr>
+	</table>
+</body>
+</html>

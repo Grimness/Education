@@ -1,0 +1,46 @@
+.page{
+	width: 100%;
+}
+
+.dpinline{
+	display: inline;
+}
+.subject{
+	margin-left:20px;
+	margin-top: 30px;
+	margin-bottom: 20px;
+	font-size: medium;
+}
+.line{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	
+}
+.evaluate{
+	margin-left:20px;
+	font-size:medium;
+	color: #69F;
+}
+.evaluatetext{
+	margin-left:20px;
+	width: 300px;
+	font-size:medium;
+}
+.studentmes{
+	margin-left: 30px;
+	
+}
+.img-circle{
+	width: 80px;
+	height: 80px;
+	margin-top: 20px;
+	
+}
+.stumes{
+	font-size: medium;
+}
+.stuclass{
+	margin-left:100px;
+	margin-top:-30px;
+	font-size: small;
+}

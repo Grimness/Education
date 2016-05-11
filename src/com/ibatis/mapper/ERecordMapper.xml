@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ibatis.mapper.ERecordMapper" >
+<!-- 电子档案 -->
+	<select id="studentERecordListByDate" parameterType="String" resultType="ERecord">
+		select a.FId as FERID,a.FTitle,a.FSutdentID as FStudentID,
+		DATE_FORMAT(a.FDate,'%w' ) as fweek,
+ 		DATE_FORMAT(a.FDate,'%Y年%c月%e日' ) as FDate,
+ 		DATE_FORMAT(a.FDate,'%k:%i' ) as ftime
+		from t_erecord a 
+		where a.FSutdentID =#{FStudentID} and DATE_FORMAT(a.FDate,'%Y年%c月%e日' ) = #{fdate}
+		order by a.FDate
+	</select>
+	
+	<select id="studentERecord" parameterType="String" resultType="ERecord">
+		select a.FId as FERID,a.FDate,a.FTitle,b.FId as Fid,b.FSubjectID ,b.FScoreM,b.FScoreE,b.FEvaluate,a.FSutdentID as FStudentID
+		from t_erecord a inner join
+		t_erecordlist b on a.FId = b.FERID
+		where a.FId =#{ferid}
+	</select>
+	
+	<select id="selectERecordID" parameterType="String" resultType="String">
+		select FId from t_erecord
+		where FTitle =#{FTitle}
+	</select>
+	
+	<select id="isExitRecordList" parameterType="String" resultType="String">
+		select FId from t_erecordlist
+		where FERID =#{ferid} and FSubjectID =#{fsubjectid}
+	</select>
+	
+	<update id="updateRecordList" parameterType="ERecord" >
+	update  t_erecordlist set FScoreM = #{FScoreM},FScoreE = #{FScoreE},FEvaluate = #{FEvaluate}
+	where FSubjectID = #{FSubjectID}
+	</update>
+	
+	
+	<insert id="insertERecord" parameterType="ERecord" > 
+		insert into t_erecord (FDate,FTitle,FSutdentID)
+		value(#{FDate},#{FTitle},#{FStudentID}) 
+	</insert>
+	
+	<select id="getERecordId" parameterType="String" resultType="String" > 
+		select FId from t_erecord where  FTitle = #{ftitle}
+	</select>
+	
+	<insert id="insertERecordList" parameterType="ERecord" > 
+		insert into t_erecordlist (FERID,FSubjectID,FScoreM,FScoreE,FEvaluate)
+		value(#{FERID},#{FSubjectID},#{FScoreM},#{FScoreE},#{FEvaluate}) 
+	</insert>
+	
+	<select id="dateGroupERecord" parameterType="String" resultType="String">
+ 	select DATE_FORMAT(p.FDate,'%Y年%c月%e日' ) as FDate
+	from t_erecord p
+ 	where FSutdentID = #{FStudentID}
+ 	group by DATE_FORMAT(p.FDate,'%Y年%c月%e日')
+ 	order by p.FDate
+	</select>	
+	
+	<select id="teacherCheck" parameterType="String" resultType="String">
+ 	select ftype from t_user where fphone=#{fphone} and ftype = 0; 
+	</select>	
+	<select id="teacherSubject" parameterType="String" resultType="String">
+	  	select fsubjectid from t_user  where fphone=#{fphone} and ftype = 0
+	 </select>
+	 
+	 <select id="getEvaluationTitle"  parameterType="String" resultType="Evaluation">
+	  	select FId,FDate,FSutdentID,FEvaType,FEvaKey,FEValuation from t_overallevaluation  where FSutdentID = #{fstudentid}
+	 </select>
+	 
+	  <select id="addEvaluationType" parameterType="String"  resultType="Evaluation">
+	  	select FEvaKey,FEValuation from t_overallevaluation  where FId = #{fid}
+	 </select>
+</mapper>
